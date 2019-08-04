@@ -14,6 +14,18 @@ public:
     void MaskOperation(Image & img) const;
     void Filter2DMask(Image& img) const;
 
+    // Implements of cv::bitwise_not()
+    void BitwiseNot(Image& img) const;
+
+    // blur
+    void Blur(Image& img) const;
+    void GaussianBlur(Image& img) const;
+    void MediaBlur(Image& img) const;
+    void BilateralFilter(Image& img) const;
+
+    // reference: https://blog.csdn.net/fzhykx/article/details/79532864
+    cv::Mat GenerateGaussianTemplate(int size, double sigma) const;
+
 private:
     cv::Mat kernel_;
 };

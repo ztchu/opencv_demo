@@ -9,7 +9,9 @@ public:
     Image(const std::string& file_path,
         const std::string& input_window_name = "input image",
         const std::string& output_window_name = "output image");
-    Image(cv::Mat& src);
+    Image(cv::Mat& src,
+        const std::string& input_window_name = "input image",
+        const std::string& output_window_name = "output image");
     ~Image();
     cv::Mat& GetSrcImage();
     cv::Mat& GetDstImage();
