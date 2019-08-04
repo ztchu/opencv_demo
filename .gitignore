@@ -1,0 +1,7 @@
+# ignore some files
+
+/x64/*
+/.vs/*
+*/x64/*
+*/log/*
+*.user
