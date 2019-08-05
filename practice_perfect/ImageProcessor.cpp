@@ -92,3 +92,15 @@ cv::Mat ImageProcessor::GenerateGaussianTemplate(int size, double sigma) const {
     }
     return result;
 }
+
+void ImageProcessor::Dilate(Image& image, int pos) const {
+    cv::Mat structure_element = cv::getStructuringElement(cv::MORPH_RECT,
+        cv::Size(2 * pos + 1, 2 * pos + 1));
+    cv::dilate(image.GetSrcImage(), image.GetDstImage(), structure_element);
+}
+
+void ImageProcessor::Erode(Image& img, int pos) const {
+    cv::Mat structure_element = cv::getStructuringElement(cv::MORPH_RECT,
+        cv::Size(2 * pos + 1, 2 * pos + 1));
+    cv::erode(img.GetSrcImage(), img.GetDstImage(), structure_element);
+}

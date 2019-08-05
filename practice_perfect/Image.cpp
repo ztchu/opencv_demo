@@ -8,6 +8,11 @@ Image::Image(const std::string& file_path,
 
     input_window_name_ = input_window_name;
     output_window_name_ = output_window_name;
+
+    // Create output window here for trackbar, because ShowDstImage 
+    // always called after cv::createTrackbar, if create output window
+    // in ShowDstImage(), createTrackbar will fail.
+    cv::namedWindow(output_window_name_, cv::WINDOW_AUTOSIZE);
 }
 
 Image::Image(cv::Mat& src,
@@ -17,6 +22,8 @@ Image::Image(cv::Mat& src,
     dst_.create(src_.size(), src_.type());
     input_window_name_ = input_window_name;
     output_window_name_ = output_window_name;
+
+    cv::namedWindow(output_window_name_, cv::WINDOW_AUTOSIZE);
 }
 
 Image::~Image() {
@@ -40,14 +47,13 @@ void Image::ShowSrcImage() const {
 }
 
 void Image::ShowDstImage() const {
-    static bool first_run = true;
-    if (first_run) {
-        first_run = false;
-        cv::namedWindow(output_window_name_, cv::WINDOW_AUTOSIZE);
-    }
     cv::imshow(output_window_name_, dst_);
 }
 
 bool Image::Empty() const {
     return src_.empty();
+}
+
+std::string Image::GetOutputWindowName() const {
+    return output_window_name_;
 }

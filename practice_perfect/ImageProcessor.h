@@ -26,6 +26,9 @@ public:
     // reference: https://blog.csdn.net/fzhykx/article/details/79532864
     cv::Mat GenerateGaussianTemplate(int size, double sigma) const;
 
+    void Dilate(Image& img, int pos) const;
+    void Erode(Image& img, int pos) const;
+
 private:
     cv::Mat kernel_;
 };

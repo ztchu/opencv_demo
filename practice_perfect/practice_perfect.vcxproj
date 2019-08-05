@@ -130,12 +130,14 @@
   <ItemGroup>
     <ClInclude Include="Image.h" />
     <ClInclude Include="ImageProcessor.h" />
+    <ClInclude Include="image_test.h" />
     <ClInclude Include="logger.h" />
     <ClInclude Include="Utility.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="ImageProcessor.cpp" />
+    <ClCompile Include="image_test.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Utility.cpp" />
   </ItemGroup>

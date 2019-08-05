@@ -20,6 +20,7 @@ public:
     void ShowDstImage() const;
 
     bool Empty() const;
+    std::string GetOutputWindowName() const;
 
 private:
     std::string input_window_name_;
