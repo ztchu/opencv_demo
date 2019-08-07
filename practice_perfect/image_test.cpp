@@ -58,4 +58,46 @@ void TestDilate() {
     cv::waitKey(0);
 }
 
+void TestMorphology() {
+    Image lena("../images/lena.jpg");
+    if (lena.Empty()) {
+        std::cerr << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    ImageProcessor processor;
+    int operation = cv::MORPH_BLACKHAT;
+    processor.MorphologyOperation(lena, operation);
+    lena.ShowDstImage();
+    cv::waitKey(0);
+}
+
+void TestExtractHLine() {
+    Image input_image("../images/hv_line.bmp");
+    if (input_image.Empty()) {
+        std::cerr << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    ImageProcessor processor;
+    processor.ExtractHorizontalAndVeticalLine(input_image, false);
+    input_image.ShowSrcImage();
+    input_image.ShowDstImage();
+    cv::waitKey(0);
+}
+
+void TestExtractChars() {
+    Image input_image("../images/chars.png");
+    if (input_image.Empty()) {
+        std::cerr << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    ImageProcessor processor;
+    processor.ExtractChars(input_image);
+    input_image.ShowSrcImage();
+    input_image.ShowDstImage();
+    cv::waitKey(0);
+}
+
 }

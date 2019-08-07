@@ -104,3 +104,72 @@ void ImageProcessor::Erode(Image& img, int pos) const {
         cv::Size(2 * pos + 1, 2 * pos + 1));
     cv::erode(img.GetSrcImage(), img.GetDstImage(), structure_element);
 }
+
+// MORPH_TOPHAT/MORPH_BLACKHAT/MORPH_OPEN/MORPH_CLOSE/MORPH_GRADIENT
+void ImageProcessor::MorphologyOperation(Image& img, int operation) const {
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
+    cv::morphologyEx(img.GetSrcImage(), img.GetDstImage(), cv::MORPH_BLACKHAT, kernel);
+}
+
+void ImageProcessor::ExtractHorizontalAndVeticalLine(Image& img, bool is_lookup_hline) const {
+    // 1.Convert to gray image.
+    cv::cvtColor(img.GetSrcImage(), img.GetDstImage(), cv::COLOR_BGR2GRAY);
+
+    // 2.Convert to binary image, make sure the background is black.
+    Image binary_image(img.GetDstImage());
+    cv::adaptiveThreshold(~binary_image.GetSrcImage(), binary_image.GetDstImage(), 255,
+        cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 15, -2);
+
+    if (is_lookup_hline) {
+        // 3.Get horizontal structuring element.
+        cv::Mat h_kernel = cv::getStructuringElement(cv::MORPH_RECT,
+            cv::Size(binary_image.GetDstImage().cols / 16, 1));
+        // 4.Erode
+        //cv::erode(binary_image.GetDstImage(), binary_image.GetSrcImage(), h_kernel);
+        // 5.Dilate
+        //cv::dilate(binary_image.GetSrcImage(), img.GetDstImage(), h_kernel);
+
+        // morphology open
+        cv::morphologyEx(binary_image.GetDstImage(), img.GetDstImage(), cv::MORPH_OPEN, h_kernel);
+    }
+    else {
+        // 3.Get vertical structuring element.
+        cv::Mat v_kernel = cv::getStructuringElement(cv::MORPH_RECT,
+            cv::Size(1, binary_image.GetDstImage().rows / 16));
+        // 4.Erode
+        //cv::erode(binary_image.GetDstImage(), binary_image.GetSrcImage(), v_kernel);
+        // 5.Dilate
+        //cv::dilate(binary_image.GetSrcImage(), img.GetDstImage(), v_kernel);
+        
+        // morphology open
+        cv::morphologyEx(binary_image.GetDstImage(), img.GetDstImage(), cv::MORPH_OPEN, v_kernel);
+    }
+
+    cv::bitwise_not(img.GetDstImage(), img.GetDstImage());
+}
+
+void ImageProcessor::ExtractChars(Image& img) const {
+    // 1.Convert to gray image.
+    cv::cvtColor(img.GetSrcImage(), img.GetDstImage(), cv::COLOR_BGR2GRAY);
+
+    // 2.Convert to binary image, make sure the background is black.
+    Image binary_image(img.GetDstImage());
+    cv::adaptiveThreshold(~binary_image.GetSrcImage(), binary_image.GetDstImage(), 255,
+        cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 7, -2);
+
+    // binary_image.ShowDstImage();
+
+    // 3.Get rect structuring element.
+    cv::Mat rect_kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3), cv::Point(-1, -1));
+
+    // 4.Erode
+    cv::erode(binary_image.GetDstImage(), binary_image.GetSrcImage(), rect_kernel);
+    // 5.Dilate
+    cv::dilate(binary_image.GetSrcImage(), img.GetDstImage(), rect_kernel);
+
+    // morphology open
+    //cv::morphologyEx(binary_image.GetDstImage(), img.GetDstImage(), cv::MORPH_OPEN, rect_kernel);
+
+    cv::bitwise_not(img.GetDstImage(), img.GetDstImage());
+    cv::blur(img.GetDstImage(), img.GetDstImage(), cv::Size(3, 3), cv::Point(-1, -1));
+}

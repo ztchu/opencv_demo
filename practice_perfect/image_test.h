@@ -11,4 +11,7 @@ namespace image_test {
     void TestMaskOperation();
     void TestFilter2D();
     void TestDilate();
+    void TestMorphology();
+    void TestExtractHLine();
+    void TestExtractChars();
 }

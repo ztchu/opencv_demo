@@ -29,6 +29,12 @@ public:
     void Dilate(Image& img, int pos) const;
     void Erode(Image& img, int pos) const;
 
+    void MorphologyOperation(Image& img, int operation) const;
+    
+    void ExtractHorizontalAndVeticalLine(Image& img, bool is_lookup_hline) const;
+    void ExtractChars(Image& img) const;
+
+
 private:
     cv::Mat kernel_;
 };
