@@ -4,7 +4,7 @@ Image::Image(const std::string& file_path,
     const std::string& input_window_name,
     const std::string& output_window_name) {
     src_ = cv::imread(file_path.c_str());
-    dst_.create(src_.size(), src_.type());
+    //dst_.create(src_.size(), src_.type());
 
     input_window_name_ = input_window_name;
     output_window_name_ = output_window_name;
@@ -19,7 +19,7 @@ Image::Image(cv::Mat& src,
     const std::string& input_window_name,
     const std::string& output_window_name) {
     src.copyTo(src_);
-    dst_.create(src_.size(), src_.type());
+    //dst_.create(src_.size(), src_.type());
     input_window_name_ = input_window_name;
     output_window_name_ = output_window_name;
 

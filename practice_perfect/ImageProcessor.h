@@ -34,6 +34,11 @@ public:
     void ExtractHorizontalAndVeticalLine(Image& img, bool is_lookup_hline) const;
     void ExtractChars(Image& img) const;
 
+    void PyramidUp(Image& img) const;
+    void PyramidDown(Image& img) const;
+
+    void Dog(Image& img) const;
+
 
 private:
     cv::Mat kernel_;

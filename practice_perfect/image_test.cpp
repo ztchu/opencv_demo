@@ -100,4 +100,43 @@ void TestExtractChars() {
     cv::waitKey(0);
 }
 
+void TestPyrUp() {
+    Image lena("../images/lena.jpg");
+    if (lena.Empty()) {
+        std::cerr << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    ImageProcessor processor;
+    processor.PyramidUp(lena);
+    lena.ShowSrcImage();
+    lena.ShowDstImage();
+}
+
+void TestPyrDown() {
+    Image lena("../images/lena.jpg");
+    if (lena.Empty()) {
+        std::cerr << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    ImageProcessor processor;
+    processor.PyramidDown(lena);
+    lena.ShowSrcImage();
+    lena.ShowDstImage();
+}
+
+void TestDog() {
+    Image lena("../images/lena.jpg");
+    if (lena.Empty()) {
+        std::cerr << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    ImageProcessor processor;
+    processor.Dog(lena);
+    lena.ShowSrcImage();
+    lena.ShowDstImage();
+}
+
 }

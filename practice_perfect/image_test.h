@@ -14,4 +14,8 @@ namespace image_test {
     void TestMorphology();
     void TestExtractHLine();
     void TestExtractChars();
+
+    void TestPyrUp();
+    void TestPyrDown();
+    void TestDog();
 }

@@ -173,3 +173,27 @@ void ImageProcessor::ExtractChars(Image& img) const {
     cv::bitwise_not(img.GetDstImage(), img.GetDstImage());
     cv::blur(img.GetDstImage(), img.GetDstImage(), cv::Size(3, 3), cv::Point(-1, -1));
 }
+
+void ImageProcessor::PyramidUp(Image& img) const {
+    cv::pyrUp(img.GetSrcImage(), img.GetDstImage(), 
+        cv::Size(2 * img.GetSrcImage().cols, 2 * img.GetSrcImage().rows));
+}
+
+void ImageProcessor::PyramidDown(Image& img) const {
+    cv::pyrDown(img.GetSrcImage(), img.GetDstImage(),
+        cv::Size(img.GetSrcImage().cols / 2, img.GetSrcImage().rows / 2));
+}
+
+void ImageProcessor::Dog(Image& img) const {
+    cv::cvtColor(img.GetSrcImage(), img.GetDstImage(), cv::COLOR_BGR2GRAY);
+
+    cv::Mat first_blur;
+    cv::GaussianBlur(img.GetDstImage(), first_blur, cv::Size(3, 3), 0, 0);
+    
+    cv::Mat second_blur;
+    cv::GaussianBlur(first_blur, second_blur, cv::Size(3, 3), 0, 0);
+    
+    cv::subtract(first_blur, second_blur, img.GetDstImage());
+
+    cv::normalize(img.GetDstImage(), img.GetDstImage(), 255, 0, cv::NORM_MINMAX);
+}
