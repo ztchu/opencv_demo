@@ -18,4 +18,6 @@ namespace image_test {
     void TestPyrUp();
     void TestPyrDown();
     void TestDog();
+
+    void TestThreshold();
 }

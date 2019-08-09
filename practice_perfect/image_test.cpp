@@ -139,4 +139,39 @@ void TestDog() {
     lena.ShowDstImage();
 }
 
+int threshold_type = 0;
+void ThresholdTrackbarCallback(int pos, void* userdata) {
+    if (userdata == nullptr) {
+        return;
+    }
+    Image& image = std::ref(*(static_cast<Image*>(userdata)));
+    ImageProcessor processor;
+    const int threshold_max = 255;
+    processor.ThresholdOperation(image, pos, threshold_max, threshold_type);
+    image.ShowDstImage();
+}
+
+void TestThreshold() {
+    Image lena("../images/lena.jpg");
+    if (lena.Empty()) {
+        std::cerr << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    lena.ShowSrcImage();
+    cv::cvtColor(lena.GetSrcImage(), lena.GetDstImage(), cv::COLOR_BGR2GRAY);
+    cv::swap(lena.GetSrcImage(), lena.GetDstImage());
+
+    int threshold_value = 127;
+    const int threshold_max = 255;
+    const int threshold_type_max = 4;
+    cv::createTrackbar("threshold value", lena.GetOutputWindowName(),
+        &threshold_value, threshold_max, ThresholdTrackbarCallback, &lena);
+    cv::createTrackbar("threshold type", lena.GetOutputWindowName(),
+        &threshold_type, threshold_type_max, ThresholdTrackbarCallback, &lena);
+    ThresholdTrackbarCallback(threshold_value, &lena);
+
+    cv::waitKey(0);
+}
+
 }

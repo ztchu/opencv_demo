@@ -197,3 +197,7 @@ void ImageProcessor::Dog(Image& img) const {
 
     cv::normalize(img.GetDstImage(), img.GetDstImage(), 255, 0, cv::NORM_MINMAX);
 }
+
+void ImageProcessor::ThresholdOperation(Image& img, double threshold_value, double threshold_max, int op) const {
+    cv::threshold(img.GetSrcImage(), img.GetDstImage(), threshold_value, threshold_max, op | cv::THRESH_OTSU);
+}

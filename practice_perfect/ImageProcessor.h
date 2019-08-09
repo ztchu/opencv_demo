@@ -39,6 +39,8 @@ public:
 
     void Dog(Image& img) const;
 
+    void ThresholdOperation(Image& img, double threshold_value, double threshold_max, int op) const;
+
 
 private:
     cv::Mat kernel_;
