@@ -1,5 +1,7 @@
 #include "image_test.h"
 
+#include <vector>
+
 namespace image_test {
 
 void TestMaskOperation() {
@@ -171,6 +173,85 @@ void TestThreshold() {
         &threshold_type, threshold_type_max, ThresholdTrackbarCallback, &lena);
     ThresholdTrackbarCallback(threshold_value, &lena);
 
+    cv::waitKey(0);
+}
+
+void TestRobertKernel() {
+    Image lena("../images/lena.jpg");
+    if (lena.Empty()) {
+        std::cerr << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    ImageProcessor processor;
+    //processor.RobertKernelX(lena);
+    processor.RobertKernelY(lena);
+    lena.ShowDstImage();
+    cv::waitKey(0);
+}
+
+void TestSobelKernel() {
+    Image lena("../images/lena.jpg");
+    if (lena.Empty()) {
+        std::cerr << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    ImageProcessor processor;
+    processor.SobelKernelX(lena);
+    lena.ShowDstImage();
+    cv::waitKey(0);
+}
+
+void TestLaplaceKernel() {
+    Image lena("../images/lena.jpg");
+    if (lena.Empty()) {
+        std::cerr << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    ImageProcessor processor;
+    processor.LaplaceKernel(lena);
+    lena.ShowDstImage();
+    cv::waitKey(0);
+}
+
+void TestBorder() {
+    Image lena("../images/lena.jpg");
+    if (lena.Empty()) {
+        std::cerr << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    // cv::BORDER_DEFAULT£¬ cv::BORDER_WRAP, cv::BORDER_REPLICATE£¬cv::BORDER_CONSTANT
+    int border_type = cv::BORDER_WRAP;
+    int bottom, top;
+    bottom = top = lena.GetSrcImage().rows * 0.05;
+    int left, right;
+    left = right = lena.GetSrcImage().cols * 0.05;
+
+    cv::RNG rng;
+    //for (auto i = 0; i < 6; ++i) {
+        cv::Scalar color = cv::Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
+        cv::copyMakeBorder(lena.GetSrcImage(), lena.GetDstImage(), top, bottom, left, right, border_type, color);
+        lena.ShowDstImage();
+    //}
+    
+    
+    cv::waitKey(0);
+}
+
+void TestSobelGradient() {
+    Image lena("../images/lena.jpg");
+    if (lena.Empty()) {
+        std::cerr << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    lena.ShowSrcImage();
+    ImageProcessor processor;
+    processor.SobelGradient(lena);
+    lena.ShowDstImage();
     cv::waitKey(0);
 }
 

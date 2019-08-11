@@ -41,6 +41,14 @@ public:
 
     void ThresholdOperation(Image& img, double threshold_value, double threshold_max, int op) const;
 
+    void RobertKernelX(Image& img) const;
+    void RobertKernelY(Image& img) const;
+
+    void SobelKernelX(Image& img) const;
+    void SobelKernelY(Image& img) const;
+    void LaplaceKernel(Image& img) const;
+
+    void SobelGradient(Image& img) const;
 
 private:
     cv::Mat kernel_;

@@ -201,3 +201,54 @@ void ImageProcessor::Dog(Image& img) const {
 void ImageProcessor::ThresholdOperation(Image& img, double threshold_value, double threshold_max, int op) const {
     cv::threshold(img.GetSrcImage(), img.GetDstImage(), threshold_value, threshold_max, op | cv::THRESH_OTSU);
 }
+
+void ImageProcessor::RobertKernelX(Image& img) const {
+    cv::Mat kernel = (cv::Mat_<int>(2, 2) << 1, 0, 0, -1);
+    cv::filter2D(img.GetSrcImage(), img.GetDstImage(), -1, kernel);
+}
+
+void ImageProcessor::RobertKernelY(Image& img) const {
+    cv::Mat kernel = (cv::Mat_<int>(2, 2) << 0, 1, -1, 0);
+    cv::filter2D(img.GetSrcImage(), img.GetDstImage(), -1, kernel);
+}
+
+void ImageProcessor::SobelKernelX(Image& img) const {
+    cv::Mat kernel = (cv::Mat_<int>(3, 3) << -1, 0, 1, -2, 0, 2, -1, 0, 1);
+    cv::filter2D(img.GetSrcImage(), img.GetDstImage(), -1, kernel);
+}
+
+void ImageProcessor::SobelKernelY(Image& img) const {
+    cv::Mat kernel = (cv::Mat_<int>(3, 3) << -1, -2, -1, 0, 0, 0, 1, 2, 1);
+    cv::filter2D(img.GetSrcImage(), img.GetDstImage(), -1, kernel);
+}
+
+void ImageProcessor::LaplaceKernel(Image& img) const {
+    cv::Mat kernel = (cv::Mat_<int>(3, 3) << 0, -1, 0, -1, 4, -1, 0, -1, 0);
+    cv::filter2D(img.GetSrcImage(), img.GetDstImage(), -1, kernel);
+}
+
+void ImageProcessor::SobelGradient(Image& img) const {
+    // 1. gaussian blur
+    cv::GaussianBlur(img.GetSrcImage(), img.GetDstImage(), cv::Size(3, 3), 0, 0);
+
+    // 2.bgr to gray
+    cv::Mat gray_img;
+    cv::cvtColor(img.GetDstImage(), gray_img, cv::COLOR_BGR2GRAY);
+
+    // 3.sobel x gradient
+    cv::Mat xgrad;
+    //cv::Sobel(gray_img, xgrad, CV_16S, 1, 0);
+    cv::Scharr(gray_img, xgrad, CV_16S, 1, 0);
+    cv::convertScaleAbs(xgrad, xgrad);    // saturate<uchar>)(|alpha*src+beta|)
+    cv::imshow("xgrad", xgrad);
+
+    // 4.sobel y gradient
+    cv::Mat ygrad;
+    //cv::Sobel(gray_img, ygrad, CV_16S, 0, 1);
+    cv::Scharr(gray_img, ygrad, CV_16S, 1, 0);
+    cv::convertScaleAbs(ygrad, ygrad);
+    cv::imshow("ygrad", ygrad);
+
+    // 5. add weighted
+    cv::addWeighted(xgrad, 0.5, ygrad, 0.5, 0, img.GetDstImage());
+}

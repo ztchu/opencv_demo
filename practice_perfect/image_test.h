@@ -20,4 +20,13 @@ namespace image_test {
     void TestDog();
 
     void TestThreshold();
+
+    void TestRobertKernel();
+    void TestSobelKernel();
+    void TestLaplaceKernel();
+
+    void TestBorder();
+
+    void TestSobelGradient();
+
 }
