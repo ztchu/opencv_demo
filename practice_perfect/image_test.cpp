@@ -255,4 +255,18 @@ void TestSobelGradient() {
     cv::waitKey(0);
 }
 
+void TestLaplacian() {
+    Image lena("../images/lena.jpg");
+    if (lena.Empty()) {
+        std::cerr << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    lena.ShowSrcImage();
+    ImageProcessor processor;
+    processor.Laplacian(lena);
+    lena.ShowDstImage();
+    cv::waitKey(0);
+}
+
 }

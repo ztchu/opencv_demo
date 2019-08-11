@@ -50,6 +50,8 @@ public:
 
     void SobelGradient(Image& img) const;
 
+    void Laplacian(Image& img) const;
+
 private:
     cv::Mat kernel_;
 };

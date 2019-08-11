@@ -252,3 +252,22 @@ void ImageProcessor::SobelGradient(Image& img) const {
     // 5. add weighted
     cv::addWeighted(xgrad, 0.5, ygrad, 0.5, 0, img.GetDstImage());
 }
+
+void ImageProcessor::Laplacian(Image& img) const {
+    // 1. gaussian blur
+    cv::GaussianBlur(img.GetSrcImage(), img.GetDstImage(), cv::Size(3, 3), 0);
+
+    // 2. convert color image to gray image.
+    cv::Mat gray_image;
+    cv::cvtColor(img.GetDstImage(), gray_image, cv::COLOR_BGR2GRAY);
+
+    // 3.laplacian
+    cv::Mat laplacian_image;
+    cv::Laplacian(gray_image, laplacian_image, CV_16S, 3);
+
+    // 4.convert scale abs
+    cv::convertScaleAbs(laplacian_image, laplacian_image);
+
+    // 5.threshold
+    cv::threshold(laplacian_image, img.GetDstImage(), 0, 255, cv::THRESH_OTSU | cv::THRESH_BINARY);
+}

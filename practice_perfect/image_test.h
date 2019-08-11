@@ -29,4 +29,6 @@ namespace image_test {
 
     void TestSobelGradient();
 
+    void TestLaplacian();
+
 }
