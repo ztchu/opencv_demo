@@ -269,4 +269,37 @@ void TestLaplacian() {
     cv::waitKey(0);
 }
 
+void CannyTrackbarCallback(int pos, void *user_data) {
+    if (user_data == nullptr) {
+        return;
+    }
+    Image& image = std::ref(*(static_cast<Image*>(user_data)));
+    ImageProcessor processor;
+    processor.CannyEdgeDetection(image, pos, pos *2);
+
+    cv::Mat dst;
+    image.ShowDstImage(false);
+}
+
+void TestCanny() {
+    Image lena("../images/lena.jpg");
+    if (lena.Empty()) {
+        std::cerr << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    cv::GaussianBlur(lena.GetSrcImage(), lena.GetDstImage(), cv::Size(3, 3), 0);
+    
+    cv::Mat src_image;
+    lena.GetSrcImage().copyTo(src_image);
+    cv::cvtColor(lena.GetDstImage(), lena.GetSrcImage(), cv::COLOR_BGR2GRAY);
+
+    int init_value = 50;
+    cv::createTrackbar("threshold value", lena.GetOutputWindowName(),
+        &init_value, 2 * init_value, CannyTrackbarCallback, &lena);
+    CannyTrackbarCallback(init_value, &lena);
+
+    cv::waitKey(0);
+}
+
 }

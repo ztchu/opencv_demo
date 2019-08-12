@@ -37,17 +37,28 @@ cv::Mat& Image::GetDstImage() {
     return dst_;
 }
 
-void Image::ShowSrcImage() const {
+void Image::ShowSrcImage(bool is_original) const {
     static bool first_run = true;
     if (first_run) {
         first_run = false;
         cv::namedWindow(input_window_name_, cv::WINDOW_AUTOSIZE);
     }
-    cv::imshow(input_window_name_, src_);
+    if (is_original) {
+        cv::imshow(input_window_name_, src_);
+    }
+    else {
+        cv::imshow(input_window_name_, ~src_);
+    }
 }
 
-void Image::ShowDstImage() const {
-    cv::imshow(output_window_name_, dst_);
+void Image::ShowDstImage(bool is_original) const {
+    if (is_original) {
+        cv::imshow(output_window_name_, dst_);
+    }
+    else {
+        cv::imshow(output_window_name_, ~dst_);
+    }
+    
 }
 
 bool Image::Empty() const {

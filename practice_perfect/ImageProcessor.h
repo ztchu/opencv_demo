@@ -39,7 +39,8 @@ public:
 
     void Dog(Image& img) const;
 
-    void ThresholdOperation(Image& img, double threshold_value, double threshold_max, int op) const;
+    void ThresholdOperation(Image& img, double threshold_value,
+        double threshold_max, int op) const;
 
     void RobertKernelX(Image& img) const;
     void RobertKernelY(Image& img) const;
@@ -51,6 +52,9 @@ public:
     void SobelGradient(Image& img) const;
 
     void Laplacian(Image& img) const;
+
+    void CannyEdgeDetection(Image& img, int threshold_value,
+        int high_threshold_value) const;
 
 private:
     cv::Mat kernel_;

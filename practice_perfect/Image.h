@@ -16,8 +16,10 @@ public:
     cv::Mat& GetSrcImage();
     cv::Mat& GetDstImage();
 
-    void ShowSrcImage() const;
-    void ShowDstImage() const;
+    // If is_original is true, show the original image,
+    // else show bitwise_not(image).
+    void ShowSrcImage(bool is_original = true) const;
+    void ShowDstImage(bool is_original = true) const;
 
     bool Empty() const;
     std::string GetOutputWindowName() const;

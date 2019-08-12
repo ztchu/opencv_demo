@@ -31,4 +31,6 @@ namespace image_test {
 
     void TestLaplacian();
 
+    void TestCanny();
+
 }

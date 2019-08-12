@@ -271,3 +271,7 @@ void ImageProcessor::Laplacian(Image& img) const {
     // 5.threshold
     cv::threshold(laplacian_image, img.GetDstImage(), 0, 255, cv::THRESH_OTSU | cv::THRESH_BINARY);
 }
+
+void ImageProcessor::CannyEdgeDetection(Image& img, int low_threshold_value, int high_threshold_value) const {
+    cv::Canny(img.GetSrcImage(), img.GetDstImage(), low_threshold_value, high_threshold_value);
+}
