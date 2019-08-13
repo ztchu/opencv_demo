@@ -277,8 +277,7 @@ void CannyTrackbarCallback(int pos, void *user_data) {
     ImageProcessor processor;
     processor.CannyEdgeDetection(image, pos, pos *2);
 
-    cv::Mat dst;
-    image.ShowDstImage(false);
+    image.ShowDstImage();
 }
 
 void TestCanny() {
@@ -287,12 +286,7 @@ void TestCanny() {
         std::cerr << "Can't read image from given path." << std::endl;
         return;
     }
-
-    cv::GaussianBlur(lena.GetSrcImage(), lena.GetDstImage(), cv::Size(3, 3), 0);
-    
-    cv::Mat src_image;
-    lena.GetSrcImage().copyTo(src_image);
-    cv::cvtColor(lena.GetDstImage(), lena.GetSrcImage(), cv::COLOR_BGR2GRAY);
+    lena.ShowSrcImage();
 
     int init_value = 50;
     cv::createTrackbar("threshold value", lena.GetOutputWindowName(),

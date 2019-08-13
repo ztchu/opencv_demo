@@ -273,5 +273,18 @@ void ImageProcessor::Laplacian(Image& img) const {
 }
 
 void ImageProcessor::CannyEdgeDetection(Image& img, int low_threshold_value, int high_threshold_value) const {
-    cv::Canny(img.GetSrcImage(), img.GetDstImage(), low_threshold_value, high_threshold_value);
+    // 1.gaussian blur
+    cv::GaussianBlur(img.GetSrcImage(), img.GetDstImage(), cv::Size(3, 3), 0);
+
+    // 2.convert color image to gray
+    cv::Mat gray_image;
+    cv::cvtColor(img.GetDstImage(), gray_image, cv::COLOR_BGR2GRAY);
+
+    // 3.canny edge detection
+    cv::Mat canny_edge;
+    cv::Canny(gray_image, canny_edge, low_threshold_value, high_threshold_value);
+
+    // 4.copy src by mask of edge
+    img.GetDstImage() = cv::Mat::zeros(img.GetSrcImage().size(), img.GetSrcImage().type());
+    img.GetSrcImage().copyTo(img.GetDstImage(), canny_edge);
 }
