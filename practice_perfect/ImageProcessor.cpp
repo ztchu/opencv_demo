@@ -2,6 +2,8 @@
 
 #include "logger.h"
 
+#include <vector>
+
 void ImageProcessor::SetKernel(const cv::Mat& kernel) {
     kernel_ = kernel;
 }
@@ -287,4 +289,24 @@ void ImageProcessor::CannyEdgeDetection(Image& img, int low_threshold_value, int
     // 4.copy src by mask of edge
     img.GetDstImage() = cv::Mat::zeros(img.GetSrcImage().size(), img.GetSrcImage().type());
     img.GetSrcImage().copyTo(img.GetDstImage(), canny_edge);
+}
+
+void ImageProcessor::HoughLineDetection(Image& img) const {
+    // 1. canny
+    cv::Canny(img.GetSrcImage(), img.GetDstImage(), 100, 200);
+
+    // 2.hough line 
+    std::vector<cv::Vec4f> lines;
+    cv::HoughLinesP(img.GetDstImage(), lines, 1, CV_PI / 180.0, 10, 50, 5);
+
+    // 3.convert to color, for draw color line.
+    cv::cvtColor(img.GetDstImage(), img.GetDstImage(), cv::COLOR_GRAY2BGR);
+
+    //img.GetDstImage() = cv::Mat::zeros(img.GetDstImage().size(), img.GetDstImage().type());
+    cv::Scalar color(0, 0, 255);
+    std::cout << lines.size() << std::endl;
+    for (auto i = 0; i < lines.size(); ++i) {
+        cv::Vec4f line = lines[i];
+        cv::line(img.GetDstImage(), cv::Point(line[0], line[1]), cv::Point(line[2], line[3]), color, 2);
+    }
 }

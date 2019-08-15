@@ -56,6 +56,8 @@ public:
     void CannyEdgeDetection(Image& img, int threshold_value,
         int high_threshold_value) const;
 
+    void HoughLineDetection(Image& img) const;
+
 private:
     cv::Mat kernel_;
 };
