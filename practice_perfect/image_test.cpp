@@ -311,4 +311,19 @@ void TestHoughLine() {
     cv::waitKey(0);
 }
 
+void TestHoughCircle() {
+    Image input_image("../images/circle.bmp");
+    if (input_image.Empty()) {
+        std::cerr << "Can't read image from given path." << std::endl;
+        return;
+    }
+    input_image.ShowSrcImage();
+
+    ImageProcessor processor;
+    processor.HoughCircleDetection(input_image);
+
+    input_image.ShowDstImage();
+    cv::waitKey(0);
+}
+
 }

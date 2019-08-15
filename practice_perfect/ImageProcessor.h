@@ -58,6 +58,8 @@ public:
 
     void HoughLineDetection(Image& img) const;
 
+    void HoughCircleDetection(Image& img) const;
+
 private:
     cv::Mat kernel_;
 };

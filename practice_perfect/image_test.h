@@ -34,5 +34,6 @@ namespace image_test {
     void TestCanny();
 
     void TestHoughLine();
+    void TestHoughCircle();
 
 }

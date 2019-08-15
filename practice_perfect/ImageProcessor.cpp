@@ -310,3 +310,22 @@ void ImageProcessor::HoughLineDetection(Image& img) const {
         cv::line(img.GetDstImage(), cv::Point(line[0], line[1]), cv::Point(line[2], line[3]), color, 2);
     }
 }
+
+void ImageProcessor::HoughCircleDetection(Image& img) const {
+    // 1.median blur
+    cv::medianBlur(img.GetSrcImage(), img.GetDstImage(), 3);
+
+    // 2.convert color image to gray
+    cv::Mat gray_image;
+    cv::cvtColor(img.GetDstImage(), gray_image, cv::COLOR_BGR2GRAY);
+
+    // 3.hough circle detection.
+    std::vector<cv::Vec3f> possible_circle;
+    cv::HoughCircles(gray_image, possible_circle, cv::HOUGH_GRADIENT, 1, 10, 100, 30, 5, 100);
+
+    // 4.draw to output image
+    for (auto i = 0; i < possible_circle.size(); ++i) {
+        auto cc = possible_circle[i];
+        cv::circle(img.GetDstImage(), cv::Point(cc[0], cc[1]), cc[2], cv::Scalar(0, 0, 255), 2);
+    }
+}
