@@ -329,3 +329,37 @@ void ImageProcessor::HoughCircleDetection(Image& img) const {
         cv::circle(img.GetDstImage(), cv::Point(cc[0], cc[1]), cc[2], cv::Scalar(0, 0, 255), 2);
     }
 }
+
+void ImageProcessor::CalculateHistogram(Image& img) const {
+    // 1. split bgr
+    std::vector<cv::Mat> bgr_planes;
+    cv::split(img.GetSrcImage(), bgr_planes);
+    
+    // 2. calculate hist
+    int hist_size = 256;
+    float ranges[] = { 0, 256 };
+    const float* hist_ranges = ranges;
+    cv::Mat b_hist, g_hist, r_hist;
+    cv::calcHist(&bgr_planes[0], 1, 0, cv::Mat(), b_hist, 1, &hist_size, &hist_ranges, true, false);
+    cv::calcHist(&bgr_planes[1], 1, 0, cv::Mat(), g_hist, 1, &hist_size, &hist_ranges, true, false);
+    cv::calcHist(&bgr_planes[2], 1, 0, cv::Mat(), r_hist, 1, &hist_size, &hist_ranges, true, false);
+
+    // 3. normalize
+    int hist_height = 256;
+    cv::normalize(b_hist, b_hist, 0, hist_height, cv::NORM_MINMAX);
+    cv::normalize(g_hist, g_hist, 0, hist_height, cv::NORM_MINMAX);
+    cv::normalize(r_hist, r_hist, 0, hist_height, cv::NORM_MINMAX);
+    
+    // 4. draw hist
+    int hist_width = 512;
+    int bin_width = hist_width / hist_size;
+    img.GetDstImage() = cv::Mat(hist_height, hist_width, CV_8UC3, cv::Scalar(0, 0, 0));
+    for (size_t i = 1; i < hist_size; ++i) {
+        cv::line(img.GetDstImage(), cv::Point((i - 1) * bin_width, hist_height - cvRound(b_hist.at<float>(i - 1))),
+            cv::Point(i * bin_width, hist_height - cvRound(b_hist.at<float>(i))), cv::Scalar(255, 0, 0), 2, cv::LINE_AA);
+        cv::line(img.GetDstImage(), cv::Point((i - 1) * bin_width, hist_height - cvRound(g_hist.at<float>(i - 1))),
+            cv::Point(i * bin_width, hist_height - cvRound(g_hist.at<float>(i))), cv::Scalar(0, 255, 0), 2, cv::LINE_AA);
+        cv::line(img.GetDstImage(), cv::Point((i - 1) * bin_width, hist_height - cvRound(r_hist.at<float>(i - 1))),
+            cv::Point(i * bin_width, hist_height - cvRound(r_hist.at<float>(i))), cv::Scalar(0, 0, 255), 2, cv::LINE_AA);
+    }
+}

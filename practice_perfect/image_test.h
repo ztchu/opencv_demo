@@ -36,4 +36,6 @@ namespace image_test {
     void TestHoughLine();
     void TestHoughCircle();
 
+    void TestHistogram();
+
 }

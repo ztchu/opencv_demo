@@ -326,4 +326,19 @@ void TestHoughCircle() {
     cv::waitKey(0);
 }
 
+void TestHistogram() {
+    Image input_image("../images/lena.jpg");
+    if (input_image.Empty()) {
+        std::cerr << "Can't read image from given path." << std::endl;
+        return;
+    }
+    input_image.ShowSrcImage();
+
+    ImageProcessor processor;
+    processor.CalculateHistogram(input_image);
+
+    input_image.ShowDstImage();
+    cv::waitKey(0);
+}
+
 }

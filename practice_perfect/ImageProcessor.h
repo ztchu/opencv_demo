@@ -60,6 +60,8 @@ public:
 
     void HoughCircleDetection(Image& img) const;
 
+    void CalculateHistogram(Image& img) const;
+
 private:
     cv::Mat kernel_;
 };
