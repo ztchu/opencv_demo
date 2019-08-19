@@ -341,4 +341,32 @@ void TestHistogram() {
     cv::waitKey(0);
 }
 
+void TestCompareHist() {
+    Image first_image("../images/lena.jpg", "first input image", "first output image");
+    if (first_image.Empty()) {
+        std::cerr << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    Image second_image("../images/aloeL.jpg", "second input image", "second output image");
+    if (second_image.Empty()) {
+        std::cerr << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    ImageProcessor processor;
+    int compare_method = cv::HISTCMP_CORREL;
+    double ret = processor.CompareHistogram(first_image, second_image, compare_method);
+
+    first_image.GetDstImage() = first_image.GetSrcImage();
+    cv::putText(first_image.GetDstImage(), std::to_string(ret), cv::Point(100, 100),
+        cv::FONT_HERSHEY_PLAIN, 5, cv::Scalar(0, 255, 0), 2);
+
+    first_image.ShowDstImage();
+
+    second_image.GetDstImage() = second_image.GetSrcImage();
+    second_image.ShowDstImage();
+    cv::waitKey(0);
+}
+
 }

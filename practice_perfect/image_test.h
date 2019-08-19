@@ -38,4 +38,5 @@ namespace image_test {
 
     void TestHistogram();
 
+    void TestCompareHist();
 }

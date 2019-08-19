@@ -62,6 +62,8 @@ public:
 
     void CalculateHistogram(Image& img) const;
 
+    double CompareHistogram(Image& img_lhs, Image& img_rhs, int comp_method) const;
+
 private:
     cv::Mat kernel_;
 };

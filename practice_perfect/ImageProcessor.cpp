@@ -363,3 +363,30 @@ void ImageProcessor::CalculateHistogram(Image& img) const {
             cv::Point(i * bin_width, hist_height - cvRound(r_hist.at<float>(i))), cv::Scalar(0, 0, 255), 2, cv::LINE_AA);
     }
 }
+
+double ImageProcessor::CompareHistogram(Image& img_lhs, Image& img_rhs, int comp_method) const {
+    // 1.Convert bgr to hsv.
+    cv::cvtColor(img_lhs.GetSrcImage(), img_lhs.GetDstImage(), cv::COLOR_BGR2HSV);
+    cv::cvtColor(img_rhs.GetSrcImage(), img_rhs.GetDstImage(), cv::COLOR_BGR2HSV);
+
+    // 2.Calculate histogram.
+    cv::Mat img_lhs_hist, img_rhs_hist;
+    int channels[] = { 0, 1 };
+    int h_size = 50;
+    int s_size = 60;
+    int hs_size[] = { h_size, s_size };
+    float h_ranges[] = { 0, 180 };
+    float s_rangs[] = { 0, 256 };
+    const float* ranges[] = { h_ranges , s_rangs };
+    cv::calcHist(&img_lhs.GetDstImage(), 1, channels, cv::Mat(), img_lhs_hist,
+        2, hs_size, ranges, true, false);
+    cv::calcHist(&img_rhs.GetDstImage(), 1, channels, cv::Mat(), img_rhs_hist,
+        2, hs_size, ranges, true, false);
+
+    // 3.Normalize
+    cv::normalize(img_lhs_hist, img_lhs_hist, 0, 1, cv::NORM_MINMAX);
+    cv::normalize(img_rhs_hist, img_rhs_hist, 0, 1, cv::NORM_MINMAX);
+    
+    // 4.Compare
+    return cv::compareHist(img_lhs_hist, img_rhs_hist, comp_method);
+}
