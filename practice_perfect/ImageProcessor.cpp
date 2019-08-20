@@ -390,3 +390,28 @@ double ImageProcessor::CompareHistogram(Image& img_lhs, Image& img_rhs, int comp
     // 4.Compare
     return cv::compareHist(img_lhs_hist, img_rhs_hist, comp_method);
 }
+
+void ImageProcessor::BackProjectHist(Image& img) const {
+    // 1.Convert bgr to hsv
+    cv::cvtColor(img.GetSrcImage(), img.GetDstImage(), cv::COLOR_BGR2HSV);
+
+    // 2.Extract hue component
+    cv::Mat hue(img.GetDstImage().size(), img.GetDstImage().depth());
+    const int fromto[] = { 0, 0 };
+    cv::mixChannels(&img.GetDstImage(), 1, &hue, 1, fromto, 1);
+
+    // 3.Calculate hist
+    float ranges[] = { 0, 180 };
+    const float* hist_ranges = { ranges };
+    cv::Mat hue_hist;
+    int hist_size = 12;
+    cv::calcHist(&hue, 1, 0, cv::Mat(), hue_hist, 1, &hist_size, &hist_ranges, true, false);
+
+    // 4. normalize
+    cv::normalize(hue_hist, hue_hist, 0, 255, cv::NORM_MINMAX);
+
+    // 5.Calculate histogram back projection.
+    cv::Mat back_proj;
+    cv::calcBackProject(&hue, 1, 0, hue_hist, back_proj, &hist_ranges);
+    img.GetDstImage() = back_proj;
+}
