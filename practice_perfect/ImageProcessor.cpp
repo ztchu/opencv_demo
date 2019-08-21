@@ -415,3 +415,33 @@ void ImageProcessor::BackProjectHist(Image& img) const {
     cv::calcBackProject(&hue, 1, 0, hue_hist, back_proj, &hist_ranges);
     img.GetDstImage() = back_proj;
 }
+
+void ImageProcessor::TemplateMatch(Image& src_img, const cv::Mat& template_img, int method) const {
+    // 1.Template match
+    cv::Mat result(src_img.GetSrcImage().cols - template_img.cols + 1,
+        src_img.GetSrcImage().rows - template_img.rows + 1, CV_32F);
+    cv::matchTemplate(src_img.GetSrcImage(), template_img, result, method);
+
+    // 2. normalize
+    cv::normalize(result, result, 0, 1, cv::NORM_MINMAX);
+
+    // 3.Get min max loc
+    cv::Point min_loc, max_loc;
+    double min_value, max_value;
+    cv::minMaxLoc(result, &min_value , &max_value , &min_loc, &max_loc);
+
+    // 4.Draw rectangle.
+    cv::Point temp_loc;
+    if (method == cv::TM_SQDIFF || method == cv::TM_SQDIFF_NORMED) {
+        temp_loc = min_loc;
+    }
+    else {
+        temp_loc = max_loc;
+    }
+
+    cv::rectangle(src_img.GetSrcImage(), cv::Rect(temp_loc.x, temp_loc.y,
+        template_img.cols, template_img.rows), cv::Scalar(255, 0, 0));
+    src_img.GetDstImage() = result;
+    cv::rectangle(src_img.GetDstImage(), cv::Rect(temp_loc.x, temp_loc.y,
+        template_img.cols, template_img.rows), cv::Scalar(0, 255, 0));
+}

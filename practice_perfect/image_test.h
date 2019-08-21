@@ -40,4 +40,6 @@ namespace image_test {
 
     void TestCompareHist();
     void TestBackProjHist();
+
+    void TestTemplateMatch();
 }

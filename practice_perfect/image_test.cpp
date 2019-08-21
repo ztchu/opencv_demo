@@ -384,4 +384,27 @@ void TestBackProjHist() {
     cv::waitKey(0);
 }
 
+void TestTemplateMatch() {
+    Image input_image("../images/lena.jpg", "first input image", "first output image");
+    if (input_image.Empty()) {
+        LOG_ERROR << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    cv::Mat template_img = cv::imread("../images/lena_template.png");
+    if (template_img.empty()) {
+        LOG_ERROR << "Can't read template image." << std::endl;
+        return;
+    }
+
+    int match_method = cv::TM_SQDIFF;//cv::TM_CCOEFF;
+    ImageProcessor processor;
+    processor.TemplateMatch(input_image, template_img, match_method);
+
+    input_image.ShowSrcImage();
+    input_image.ShowDstImage();
+    
+    cv::waitKey(0);
+}
+
 }

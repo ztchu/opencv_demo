@@ -66,6 +66,8 @@ public:
 
     void BackProjectHist(Image& img) const;
 
+    void TemplateMatch(Image& src_img, const cv::Mat& template_img, int method) const;
+
 private:
     cv::Mat kernel_;
 };
