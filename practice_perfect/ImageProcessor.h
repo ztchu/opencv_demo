@@ -68,6 +68,8 @@ public:
 
     void TemplateMatch(Image& src_img, const cv::Mat& template_img, int method) const;
 
+    void DiscoverContours(Image& img, int low_threshold_value) const;
+
 private:
     cv::Mat kernel_;
 };

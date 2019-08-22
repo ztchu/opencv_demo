@@ -42,4 +42,6 @@ namespace image_test {
     void TestBackProjHist();
 
     void TestTemplateMatch();
+
+    void TestFindContours();
 }

@@ -445,3 +445,25 @@ void ImageProcessor::TemplateMatch(Image& src_img, const cv::Mat& template_img, 
     cv::rectangle(src_img.GetDstImage(), cv::Rect(temp_loc.x, temp_loc.y,
         template_img.cols, template_img.rows), cv::Scalar(0, 255, 0));
 }
+
+void ImageProcessor::DiscoverContours(Image& img, int low_threshold_value) const {
+    // 1. Convert color image to gray image.
+    cv::cvtColor(img.GetSrcImage(), img.GetDstImage(), cv::COLOR_BGR2GRAY);
+
+    // 2. Canny edge detection.
+    cv::Mat edges;
+    cv::Canny(img.GetDstImage(), edges, low_threshold_value, 2 * low_threshold_value, 3, false);
+
+    // 3. Find contours.
+    std::vector<std::vector<cv::Point>> contours;
+    cv::Mat hierarchy;
+    cv::findContours(edges, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
+
+    // 4. Draw Contours.
+    img.GetDstImage() = cv::Mat::zeros(img.GetSrcImage().size(), CV_8UC3);
+    cv::RNG rng;
+    for (size_t i = 0; i < contours.size(); ++i) {
+        cv::Scalar color(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
+        cv::drawContours(img.GetDstImage(), contours, i, color, 1, 8, hierarchy, 0);
+    }
+}

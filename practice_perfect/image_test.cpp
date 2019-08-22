@@ -407,4 +407,35 @@ void TestTemplateMatch() {
     cv::waitKey(0);
 }
 
+void FindContoursCallback(int pos, void* user_data) {
+    if (user_data == nullptr) {
+        return;
+    }
+    Image& image = std::ref(*(static_cast<Image*>(user_data)));
+    ImageProcessor processor;
+    processor.DiscoverContours(image, pos);
+
+    image.ShowDstImage();
+}
+
+void TestFindContours() {
+    Image input_image("../images/lena.jpg", "first input image", "first output image");
+    if (input_image.Empty()) {
+        LOG_ERROR << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    ImageProcessor processor;
+    processor.DiscoverContours(input_image, 50);
+
+    input_image.ShowSrcImage();
+
+    int pos = 90;
+    cv::createTrackbar("threshold value", input_image.GetOutputWindowName(),
+        &pos, 255, FindContoursCallback, &input_image);
+    FindContoursCallback(pos, &input_image);
+
+    cv::waitKey(0);
+}
+
 }
