@@ -438,4 +438,20 @@ void TestFindContours() {
     cv::waitKey(0);
 }
 
+void TestConvexHull() {
+    Image input_image("../images/lena.jpg", "first input image", "first output image");
+    if (input_image.Empty()) {
+        LOG_ERROR << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    ImageProcessor processor;
+    processor.FindConvexHull(input_image);
+
+    input_image.ShowSrcImage();
+    input_image.ShowDstImage();
+
+    cv::waitKey(0);
+}
+
 }

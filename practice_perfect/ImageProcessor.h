@@ -70,6 +70,8 @@ public:
 
     void DiscoverContours(Image& img, int low_threshold_value) const;
 
+    void FindConvexHull(Image& img) const;
+
 private:
     cv::Mat kernel_;
 };

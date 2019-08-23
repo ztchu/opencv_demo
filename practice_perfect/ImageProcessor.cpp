@@ -21,7 +21,8 @@ void ImageProcessor::MaskOperation(Image& img) const {
         const uchar* next = src.ptr<uchar>(row + 1);
         uchar* dst = img.GetDstImage().ptr<uchar>(row);
         for (int col = offset; col < cols - offset; ++col) {
-            dst[col] = cv::saturate_cast<uchar>(5 * cur[col] - cur[col - offset] - cur[col + offset] - prev[col] - next[col]);
+            dst[col] = cv::saturate_cast<uchar>(5 * cur[col] - cur[col - offset]
+                - cur[col + offset] - prev[col] - next[col]);
         }
     }
 }
@@ -200,8 +201,10 @@ void ImageProcessor::Dog(Image& img) const {
     cv::normalize(img.GetDstImage(), img.GetDstImage(), 255, 0, cv::NORM_MINMAX);
 }
 
-void ImageProcessor::ThresholdOperation(Image& img, double threshold_value, double threshold_max, int op) const {
-    cv::threshold(img.GetSrcImage(), img.GetDstImage(), threshold_value, threshold_max, op | cv::THRESH_OTSU);
+void ImageProcessor::ThresholdOperation(Image& img, double threshold_value,
+    double threshold_max, int op) const {
+    cv::threshold(img.GetSrcImage(), img.GetDstImage(), threshold_value,
+        threshold_max, op | cv::THRESH_OTSU);
 }
 
 void ImageProcessor::RobertKernelX(Image& img) const {
@@ -465,5 +468,38 @@ void ImageProcessor::DiscoverContours(Image& img, int low_threshold_value) const
     for (size_t i = 0; i < contours.size(); ++i) {
         cv::Scalar color(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
         cv::drawContours(img.GetDstImage(), contours, i, color, 1, 8, hierarchy, 0);
+    }
+}
+
+void ImageProcessor::FindConvexHull(Image& img) const {
+    // 1. Convert bgr to gray.
+    cv::cvtColor(img.GetSrcImage(), img.GetDstImage(), cv::COLOR_BGR2GRAY);
+
+    // 2. Image filtering.
+    cv::Mat blur_image;
+    cv::blur(img.GetDstImage(), blur_image, cv::Size(3, 3));
+
+    // 3. Image binaryzation.
+    cv::Mat bin_image;
+    cv::threshold(blur_image, bin_image, 127, 255, cv::BORDER_DEFAULT);
+
+    // 4. Find contours.
+    std::vector<std::vector<cv::Point>> contours;
+    std::vector<cv::Vec4i> hierarchy;
+    cv::findContours(bin_image, contours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+
+    // 5. Find convex hull.
+    std::vector<std::vector<cv::Point>> convexs(contours.size());
+    for (size_t i = 0; i < contours.size(); ++i) {
+        cv::convexHull(contours[i], convexs[i]);
+    }
+
+    // 6. Draw convex hull.
+    cv::RNG rng;
+    img.GetDstImage() = cv::Mat::zeros(img.GetSrcImage().size(), CV_8UC3);
+    for (size_t i = 0; i < convexs.size(); ++i) {
+        cv::Scalar color(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
+        cv::drawContours(img.GetDstImage(), contours, i, color);
+        cv::drawContours(img.GetDstImage(), convexs, i, color);
     }
 }
