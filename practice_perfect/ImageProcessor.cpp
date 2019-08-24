@@ -503,3 +503,54 @@ void ImageProcessor::FindConvexHull(Image& img) const {
         cv::drawContours(img.GetDstImage(), convexs, i, color);
     }
 }
+
+void ImageProcessor::FindTarget(Image& img) const {
+    // 1. Convert color image to gray.
+    cv::cvtColor(img.GetSrcImage(), img.GetDstImage(), cv::COLOR_BGR2GRAY);
+
+    // 2. Image filtering.
+    cv::Mat filter_image;
+    cv::blur(img.GetDstImage(), filter_image, cv::Size(3, 3));
+
+    // 3. Image binaryzation.
+    cv::Mat bin_image;
+    cv::threshold(img.GetDstImage(), bin_image, 164, 255, cv::THRESH_BINARY);
+
+    // 4. Find contours.
+    std::vector<std::vector<cv::Point>> contours;
+    std::vector<cv::Vec4i> hierarchy;
+    cv::findContours(bin_image, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
+
+    // 5. Find the smallest shape.
+    std::vector<std::vector<cv::Point>> contours_ploy(contours.size());
+    std::vector<cv::Rect> rects(contours.size());
+    std::vector<cv::Point2f> circle_centers(contours.size());
+    std::vector<float> circle_radius(contours.size());
+    std::vector<cv::RotatedRect> min_rects(contours.size());
+    std::vector<cv::RotatedRect> min_ellipse(contours.size());
+    for (size_t i = 0; i < contours.size(); ++i) {
+        cv::approxPolyDP(contours[i], contours_ploy[i], 5, true);
+        rects[i] = cv::boundingRect(contours_ploy[i]);
+        cv::minEnclosingCircle(contours_ploy[i], circle_centers[i], circle_radius[i]);
+        if (contours_ploy[i].size() > 4) {
+            min_ellipse[i] = cv::fitEllipse(contours_ploy[i]);
+            min_rects[i] = cv::minAreaRect(contours_ploy[i]);
+        }
+    }
+
+    // 6. Draw shape.
+    cv::RNG rng;
+    cv::Point2f rect_points[4];
+    for (size_t i = 0; i < contours.size(); ++i) {
+        cv::Scalar color(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
+        //cv::rectangle(img.GetSrcImage(), rects[i], color);
+        //cv::circle(img.GetSrcImage(), circle_centers[i], circle_radius[i], color);
+        if (contours[i].size() > 4) {
+            cv::ellipse(img.GetSrcImage(), min_ellipse[i], color);
+            min_rects[i].points(rect_points);
+            for (size_t j = 0; j < 4; ++j) {
+                cv::line(img.GetSrcImage(), rect_points[j], rect_points[(j + 1) % 4], color);
+            }
+        }
+    }
+}

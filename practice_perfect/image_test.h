@@ -46,4 +46,6 @@ namespace image_test {
     void TestFindContours();
 
     void TestConvexHull();
+
+    void TestFindTarget();
 }

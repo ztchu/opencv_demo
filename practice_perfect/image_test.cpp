@@ -454,4 +454,20 @@ void TestConvexHull() {
     cv::waitKey(0);
 }
 
+void TestFindTarget() {
+    Image input_image("../images/hot.png", "first input image", "first output image");
+    if (input_image.Empty()) {
+        LOG_ERROR << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    ImageProcessor processor;
+    processor.FindTarget(input_image);
+
+    input_image.ShowSrcImage();
+    input_image.ShowDstImage();
+
+    cv::waitKey(0);
+}
+
 }

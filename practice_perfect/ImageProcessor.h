@@ -72,6 +72,8 @@ public:
 
     void FindConvexHull(Image& img) const;
 
+    void FindTarget(Image& img) const;
+
 private:
     cv::Mat kernel_;
 };
