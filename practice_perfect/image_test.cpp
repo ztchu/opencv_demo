@@ -470,4 +470,21 @@ void TestFindTarget() {
     cv::waitKey(0);
 }
 
+void TestCalculateMoments() {
+    Image input_image("../images/hot.png", "first input image", "first output image");
+    if (input_image.Empty()) {
+        LOG_ERROR << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    ImageProcessor processor;
+    int threshold_value = 56;
+    processor.CalculateMoments(input_image, threshold_value);
+
+    input_image.ShowSrcImage();
+    input_image.ShowDstImage();
+
+    cv::waitKey(0);
+}
+
 }

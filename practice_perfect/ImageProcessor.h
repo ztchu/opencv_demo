@@ -74,6 +74,8 @@ public:
 
     void FindTarget(Image& img) const;
 
+    void CalculateMoments(Image& img, int threshold_value) const;
+
 private:
     cv::Mat kernel_;
 };

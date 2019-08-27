@@ -48,4 +48,6 @@ namespace image_test {
     void TestConvexHull();
 
     void TestFindTarget();
+
+    void TestCalculateMoments();
 }

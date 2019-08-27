@@ -554,3 +554,40 @@ void ImageProcessor::FindTarget(Image& img) const {
         }
     }
 }
+
+void ImageProcessor::CalculateMoments(Image& img, int threshold_value) const {
+    // 1.Convert color image to gray.
+    cv::Mat gray_image;
+    cv::cvtColor(img.GetSrcImage(), gray_image, cv::COLOR_BGR2GRAY);
+
+    // 2.Gaussian blur.
+    cv::Mat blur_image;
+    cv::GaussianBlur(gray_image, blur_image, cv::Size(3, 3), 0);
+
+    // 3.Canny edge detection.
+    cv::Mat canny_image;
+    cv::Canny(blur_image, canny_image, threshold_value, threshold_value * 2, 3, false);
+
+    // 4.Find contours.
+    std::vector<std::vector<cv::Point>> contours;
+    std::vector<cv::Vec4i> hierarchy;
+    cv::findContours(canny_image, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
+
+    // 5.Calculate moments.
+    std::vector<cv::Moments> contours_moments(contours.size());
+    std::vector<cv::Point> circle_centers(contours.size());
+    for (size_t i = 0; i < contours.size(); ++i) {
+        contours_moments[i] = cv::moments(contours[i]);
+        circle_centers[i] = cv::Point(static_cast<float>(contours_moments[i].m10 / contours_moments[i].m00),
+            static_cast<float>(contours_moments[i].m01 / contours_moments[i].m00));
+    }
+
+    // 6.Draw image.
+    cv::RNG rng;
+    img.GetDstImage() = cv::Mat::zeros(img.GetSrcImage().size(), CV_8UC3);
+    for (size_t i = 0; i < contours.size(); ++i) {
+        cv::Scalar color(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
+        cv::drawContours(img.GetDstImage(), contours, i, color);
+        cv::circle(img.GetDstImage(), circle_centers[i], 3, color);
+    }
+}
