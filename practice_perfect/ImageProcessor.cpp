@@ -591,3 +591,63 @@ void ImageProcessor::CalculateMoments(Image& img, int threshold_value) const {
         cv::circle(img.GetDstImage(), circle_centers[i], 3, color);
     }
 }
+
+void ImageProcessor::PointPolygonTest(Image& img, const cv::Point2f& test_point) const {
+    // 1.Convert color image to gray.
+    cv::Mat gray_image;
+    cv::cvtColor(img.GetSrcImage(), gray_image, cv::COLOR_BGR2GRAY);
+
+    // 2.Image filtering .
+    cv::Mat filter_image;
+    cv::blur(gray_image, filter_image, cv::Size(3, 3));
+
+    // 3.Image binaryzation.
+    cv::threshold(filter_image, img.GetDstImage(), 167, 255, cv::THRESH_OTSU);
+
+    // 4.Find contours.
+    std::vector<std::vector<cv::Point>> contours;
+    std::vector<cv::Vec4i> hierarchy;
+    cv::findContours(img.GetDstImage(), contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
+
+    // 5.Point polygon test.
+    img.GetDstImage() = cv::Mat::zeros(img.GetSrcImage().size(), CV_8UC3);
+    cv::RNG rng;
+    cv::circle(img.GetDstImage(), test_point, 3, cv::Scalar(0, 0, 255));
+    for (size_t i = 0; i < contours.size(); ++i) {
+        // When flag is false, 1 represents inside the polygon, 0 represents on the edge.
+        if (cv::pointPolygonTest(contours[i], test_point, false) >= 0) {
+            cv::Scalar color(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
+            cv::drawContours(img.GetDstImage(), contours, i, color, 2);
+        }
+    }
+}
+
+void BinaryThresholdTrackbarCallback(int pos, void* user_data) {
+    if (user_data == nullptr) {
+        return;
+    }
+    Image& image = std::ref(*(static_cast<Image*>(user_data)));
+
+    cv::threshold(image.GetSrcImage(), image.GetDstImage(), pos, 255, cv::THRESH_BINARY);
+
+    image.ShowDstImage();
+}
+
+void ImageProcessor::FindBestBinayThreshold(Image& img) const {
+    // 1. Convert color image to gray
+    cv::Mat gray_image;
+    cv::cvtColor(img.GetSrcImage(), gray_image, cv::COLOR_BGR2GRAY);
+
+    // 2. Store src image.
+    cv::Mat src_image = img.GetSrcImage();
+    img.ShowSrcImage();
+
+    // 2. Gaussian blur.
+    cv::GaussianBlur(gray_image, img.GetSrcImage(), cv::Size(3, 3), 0);
+
+    // 3. Draw trackbar.
+    int thresh_value = 78;
+    cv::createTrackbar("threshold value", img.GetOutputWindowName(), &thresh_value, 255,
+        BinaryThresholdTrackbarCallback, &img);
+    BinaryThresholdTrackbarCallback(thresh_value, &img);
+}

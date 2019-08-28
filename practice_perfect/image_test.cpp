@@ -487,4 +487,36 @@ void TestCalculateMoments() {
     cv::waitKey(0);
 }
 
+void TestPointPolygon() {
+    Image input_image("../images/hot.png", "first input image", "first output image");
+    if (input_image.Empty()) {
+        LOG_ERROR << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    //FindThreshValue("../images/hot.png");
+    ImageProcessor processor;
+    cv::Point2f test_point(235, 45);
+    processor.PointPolygonTest(input_image, test_point);
+
+    input_image.ShowSrcImage();
+    input_image.ShowDstImage();
+
+    cv::waitKey(0);
+}
+
+void FindThreshValue(const std::string& image_path) {
+    Image input_image(image_path.c_str(), "The input image to find threshold",
+        "The output image to find threshold");
+    if (input_image.Empty()) {
+        LOG_ERROR << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    ImageProcessor processor;
+    processor.FindBestBinayThreshold(input_image);
+
+    cv::waitKey(0);
+}
+
 }

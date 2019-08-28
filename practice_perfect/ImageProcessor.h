@@ -76,6 +76,10 @@ public:
 
     void CalculateMoments(Image& img, int threshold_value) const;
 
+    void PointPolygonTest(Image& img, const cv::Point2f& test_point) const;
+
+    void FindBestBinayThreshold(Image& img) const;
+
 private:
     cv::Mat kernel_;
 };

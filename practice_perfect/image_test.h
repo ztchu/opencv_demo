@@ -50,4 +50,8 @@ namespace image_test {
     void TestFindTarget();
 
     void TestCalculateMoments();
+
+    void TestPointPolygon();
+
+    void FindThreshValue(const std::string& image_path);
 }
