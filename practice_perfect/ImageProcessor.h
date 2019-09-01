@@ -80,6 +80,8 @@ public:
 
     void FindBestBinayThreshold(Image& img) const;
 
+    void ImageSegmentation(Image& img) const;
+
 private:
     cv::Mat kernel_;
 };

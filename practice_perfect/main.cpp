@@ -8,7 +8,9 @@ int main(int argc, char** argv) {
     }
 #endif
 
-    image_test::TestMaskOperation();
+    image_test::TestImageSegmentation();
+
+    cv::waitKey(0);
 
 #ifdef GLOG
     google::ShutdownGoogleLogging();

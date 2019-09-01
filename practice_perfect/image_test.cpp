@@ -519,4 +519,17 @@ void FindThreshValue(const std::string& image_path) {
     cv::waitKey(0);
 }
 
+void TestImageSegmentation() {
+    Image input_image("../images/segm_image.png");
+    if (input_image.Empty()) {
+        LOG_ERROR << "Can't read image from given path." << std::endl;
+        return;
+    }
+
+    ImageProcessor processor;
+    processor.ImageSegmentation(input_image);
+
+    cv::waitKey(0);
+}
+
 }

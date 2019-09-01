@@ -1,6 +1,6 @@
 #pragma once
 
-#define GLOG
+//#define GLOG
 
 #ifndef GLOG
 

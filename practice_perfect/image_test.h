@@ -54,4 +54,6 @@ namespace image_test {
     void TestPointPolygon();
 
     void FindThreshValue(const std::string& image_path);
+
+    void TestImageSegmentation();
 }

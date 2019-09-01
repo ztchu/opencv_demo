@@ -651,3 +651,94 @@ void ImageProcessor::FindBestBinayThreshold(Image& img) const {
         BinaryThresholdTrackbarCallback, &img);
     BinaryThresholdTrackbarCallback(thresh_value, &img);
 }
+
+void ImageProcessor::ImageSegmentation(Image& img) const {
+    // 1. Change background to black.
+    cv::Mat black_image;
+    img.GetSrcImage().copyTo(black_image);
+    for (size_t i = 0; i < black_image.rows; ++i) {
+        for (size_t j = 0; j < black_image.cols; ++j) {
+            if (black_image.at<cv::Vec3b>(i, j) == cv::Vec3b(255, 255, 255)) {
+                black_image.at<cv::Vec3b>(i, j)[0] = 0;
+                black_image.at<cv::Vec3b>(i, j)[1] = 0;
+                black_image.at<cv::Vec3b>(i, j)[2] = 0;
+            }
+        }
+    }
+    // cv::imshow("background image", black_image);
+    
+    // 2. Improve image contrast.
+    cv::Mat laplace_kernel = (cv::Mat_<float>(3, 3) << 1, 1, 1, 1, -8, 1, 1, 1, 1);
+    cv::Mat contrast_image;
+    cv::filter2D(black_image, contrast_image, CV_32F, laplace_kernel);
+    //cv::imshow("filter2D image", contrast_image);
+    cv::Mat float_image;
+    black_image.convertTo(float_image, CV_32F);
+    cv::Mat diff_image = float_image - contrast_image;
+    diff_image.convertTo(diff_image, CV_8UC3);
+    //cv::imshow("diff image", diff_image);
+
+    // 3. Image binaryzation.
+    cv::Mat gray_image;
+    cv::cvtColor(diff_image, gray_image, cv::COLOR_BGR2GRAY);
+    cv::Mat binary_image;
+    cv::threshold(gray_image, binary_image, 40, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
+    // cv::imshow("binary image", binary_image);
+
+    // 4. Distance transform.
+    cv::Mat dist_image;
+    cv::distanceTransform(binary_image, dist_image, cv::DIST_L1, 3);
+    
+    // 5. Normalize the result of distance transform.
+    cv::normalize(dist_image, dist_image, 0, 1, cv::NORM_MINMAX);
+    // cv::imshow("distance image", dist_image);
+
+    // 6. Redo image binaryzation.
+    cv::threshold(dist_image, dist_image, 0.4, 1, cv::THRESH_BINARY);
+    cv::imshow("binary image", dist_image);
+
+    // 7. Erode 
+    cv::Mat erode_kernel = cv::Mat::zeros(cv::Size(3, 3), CV_8UC1);
+    cv::erode(dist_image, dist_image, erode_kernel);
+    cv::imshow("erode image", dist_image);
+
+    // 8. Find contours
+    dist_image.convertTo(dist_image, CV_8U);
+    std::vector<std::vector<cv::Point>> contours;
+    cv::findContours(dist_image, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
+
+    // 9. Draw contours
+    cv::Mat markers = cv::Mat::zeros(dist_image.size(), CV_32SC1);
+    for (size_t i = 0; i < contours.size(); ++i) {
+        cv::drawContours(markers, contours, i, cv::Scalar::all(i + 1), -1);
+    }
+    cv::circle(markers, cv::Point(5, 5), 3, cv::Scalar(255, 255, 255));
+
+    // 10. water shed
+    cv::watershed(diff_image, markers);
+    cv::Mat mark = cv::Mat::zeros(markers.size(), CV_8UC1);
+    markers.convertTo(mark, CV_8UC1);
+    cv::bitwise_not(mark, mark);
+    // cv::imshow("mark", mark);
+
+    // 11. Coloring
+    std::vector<cv::Vec3b> colors;
+    for (size_t i = 0; i < contours.size(); ++i) {
+        colors.emplace_back(cv::Vec3b(cv::theRNG().uniform(0, 255),
+            cv::theRNG().uniform(0, 255), cv::theRNG().uniform(0, 255)));
+    }
+
+    img.GetDstImage() = cv::Mat::zeros(markers.size(), CV_8UC3);
+    for (size_t i = 0; i < markers.rows; ++i) {
+        for (size_t j = 0; j < markers.cols; ++j) {
+            int index = markers.at<int>(i, j);
+            if (index > 0 && index <= contours.size()) {
+                img.GetDstImage().at<cv::Vec3b>(i, j) = colors[index - 1];
+            }
+            else {
+                img.GetDstImage().at<cv::Vec3b>(i, j) = cv::Vec3b(0, 0, 0);
+            }
+        }
+    }
+    img.ShowDstImage();
+}
